@@ -1,0 +1,196 @@
+\documentclass[12pt,twocolumn]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amsfonts,amssymb,stmaryrd}
+\usepackage[english]{babel}
+\usepackage{pdfpages}
+
+%=============Affichage=======================
+\usepackage{fullpage}
+\usepackage{mathtools}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz,tkz-tab}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\title{Règles de traduction Compilation}
+\date{}
+
+\setlength{\topmargin}{-1.5cm}
+\setlength{\textheight}{25cm}
+\setlength{\textwidth}{20.5cm}
+\setlength{\oddsidemargin}{-1.5cm}
+\setlength{\evensidemargin}{50cm}
+\doublespacing  
+
+\newcommand{\rd}[1]{\textcolor{red}{#1}}
+\newcommand{\g}[1]{\textcolor{lime}{#1}}
+\newcommand{\dg}[1]{\textcolor{dgreen}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\cy}[1]{\textcolor{cyan}{#1}}
+\newcommand{\blz}{$\blacklozenge$}
+\newcommand{\ns}{\\\indent\indent\vspace{0.25cm}}
+\setcounter{secnumdepth}{5}% profondeur de la table des matières
+\usepackage{titlesec}
+
+
+\titleformat{\chapter}[frame]
+{\Huge}
+{\filright\rmfamily\bfseries\Huge\enspace\thechapter\enspace}
+{18pt}
+{\rmfamily\huge\bfseries\filcenter}
+% rmfamily=roman, sffamily = sans serif ou ttfamily =type writer
+\usepackage[many]{tcolorbox} % Creation de box collorable pour le texte non intégré
+
+\newtcolorbox{trad}{colback=white,colframe=black,arc=0mm,sharp corners= northwest,arc=10pt}
+
+%=============Mathématiques=================
+
+%--------------Raccourcis:------------------
+
+\renewcommand{\o}{\circ}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\renewcommand*{\overrightarrow}[1]{\vbox{\halign{##\cr
+ \tiny\rightarrowfill\cr\noalign{\nointerlineskip\vskip1pt}
+ $#1\mskip2mu$\cr}}}
+
+%Format de fonctions:
+\newcommand{\fct}[5]
+	{
+	  \begin{array}{ccccc}
+		#1 & : & #2 & \to & #3 \\
+	    && #4 & \mapsto & #5 \\
+	  \end{array}
+	}
+\newcommand{\dfct}[2] {#1 \mapsto #2}
+
+\renewcommand{\abs}[1]{|#1|}
+\newcommand{\nm}[2]{ ||#1||_{#2} }
+\begin{document}
+\chapter*{Règles de traduction}
+
+$\llbracket E \rrbracket$ est le code pile qui évalue E et place le résultat dans la pile
+
+\begin{trad}
+\paragraph*{ \underline{Opération arithmétique avec Constantes}}
+\begin{align*}
+    &\llbracket x +1 \rrbracket = \\
+    &\texttt{push } \delta(x)\\
+    &\texttt{mpush } 1\\
+    &\texttt{add}
+\end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Constantes}}
+    \begin{align*}
+        &\llbracket \texttt{cst} \rrbracket = \\
+        &\texttt{mpush cst}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Opération arithmétique}}
+    \begin{align*}
+        &\llbracket E1+E2 \rrbracket = \\
+        &\llbracket E1 \rrbracket\\
+        &\llbracket E2 \rrbracket\\
+        &\texttt{add}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Supérieur}}
+    \begin{align*}
+        &\llbracket E1>E2 \rrbracket = \\
+        &\llbracket E1 \rrbracket\\
+        &\llbracket E2 \rrbracket\\
+        &\texttt{testg}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Inférieur}}
+    \begin{align*}
+        &\llbracket E1<E2 \rrbracket = \\
+        &\llbracket E1 \rrbracket\\
+        &\llbracket E2 \rrbracket\\
+        &\texttt{testl}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Affectation}}
+    \begin{align*}
+        &\llbracket x=E \rrbracket = \\
+        &\llbracket E \rrbracket\\
+        &\texttt{pop} \delta(x)
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Contrôle}}
+    \begin{align*}
+        &\llbracket \texttt{if(C) S1 else S2} \rrbracket = \\
+        &\llbracket C \rrbracket\\
+        &\texttt{jz else}\\
+        &\llbracket S1 \rrbracket\\
+        &\texttt{jmp endif}\\
+        \texttt{else:}&\\
+        &\llbracket S2 \rrbracket\\
+        \texttt{endif:}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Programme}}
+    \begin{align*}
+        &\llbracket \texttt{init id1,\dots,idn; S1 ... Sp} \rrbracket = \\
+        &\texttt{alloc n}\\
+        &\llbracket S1 \rrbracket \dots \llbracket Sp \rrbracket\\
+        &\texttt{free}\\
+        &\texttt{stop}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Appel de fonction}}
+    \begin{align*}
+        &\llbracket \texttt{id(E1,\dots,En)} \rrbracket = \\
+        &\llbracket E1 \rrbracket \dots \llbracket En \rrbracket\\
+        &\texttt{call id}\\
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Fonction}}
+    \begin{align*}
+        &\llbracket \texttt{int id(int id1,\dots,int idp)}\lbrace \\
+        &\texttt{int id'1,\dots,id'q;S1\dots Sr} \rbrace \rrbracket =\\
+        \texttt{id:}&\\
+        &\texttt{alloc q}\\
+        &\llbracket S1 \rrbracket \dots \llbracket Sr \rrbracket\\
+        &\texttt{free}\\
+        &\texttt{ret p}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Return}}
+    \begin{align*}
+        &\llbracket \texttt{return E} \rrbracket = \\
+        &\llbracket E \rrbracket\\
+        &\texttt{iret nb\_param}\\
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Programme avec fonctions}}
+    \begin{align*}
+        &\llbracket \texttt{F1\dots Fp} \rrbracket = \\
+        &\texttt{call main}\\
+        &\texttt{mov rax,0}\\
+        &\texttt{ret 0}\\
+        &\llbracket F1 \rrbracket\\
+        & \dots\\
+        &\llbracket Fp \rrbracket\\
+    \end{align*}
+\end{trad}
+
+\chapter*{Machine à Registres}
+\end{document}
