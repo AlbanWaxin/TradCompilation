@@ -73,7 +73,7 @@
 \renewcommand{\abs}[1]{|#1|}
 \newcommand{\nm}[2]{ ||#1||_{#2} }
 \begin{document}
-\chapter*{Règles de traduction}
+\chapter*{Règles de traduction: Machine à Pile}
 
 $\llbracket E \rrbracket$ est le code pile qui évalue E et place le résultat dans la pile
 
@@ -192,5 +192,182 @@ $\llbracket E \rrbracket$ est le code pile qui évalue E et place le résultat d
     \end{align*}
 \end{trad}
 
-\chapter*{Machine à Registres}
+\chapter*{Règles de traduction: Machine à Registres}
+\texttt{[t1 + imm] = t2} Ecrit t2 à l'adresse \texttt{t1+imm}
+
+\texttt{ t1 = [t2 + imm]} Ecrit dans t1 la donnée stockée dans l'adresse \texttt{t2+imm}
+
+\begin{trad}
+    \paragraph*{ \underline{Opération arithmétique}}\hphantom{a}\\
+    \texttt{t1 = imm} place \verb|imm| dans t1\\
+    \texttt{t1 = t2} copie \verb|t2| dans \verb|t1|\\
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Tests}}\hphantom{a}\\
+    \texttt{t1 = t2 rel t3}; \\
+    \verb|t1 = 1| si \texttt{t2 rel t3} 0 sinon\\
+    \texttt{rel} peut être == / != / < / >\\
+\end{trad}
+\begin{trad}
+    \paragraph*{ \underline{Contrôle}}\hphantom{a}\\
+    \texttt{jump @} saute à \verb|@|\\
+    \texttt{cjump t1 rel t2 --> @} saute à \verb|@| si t rel t1\\
+\end{trad}
+$\llbracket E \rrbracket_t$ évalue E et le place dans le temporaire \verb|t|\\
+$\rho$ donne un temporarire à partir d'une variable\\
+\begin{trad}
+    \paragraph*{ \underline{Expressions}}
+    \begin{align*}
+        &\llbracket \texttt{imm} \rrbracket_t = \\
+        &\texttt{t = imm}\\
+        &\llbracket \texttt{id} \rrbracket_t = \\
+        &\texttt{t =} \rho(id)\\
+        &\llbracket \texttt{E1 + E2} \rrbracket_t = \\
+        &\llbracket \texttt{E1} \rrbracket_{t'}\\
+        &\llbracket \texttt{E2} \rrbracket_{t} = \\
+        &\texttt{t = t' + t''}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Construction des structures}
+    \begin{align*}
+        &\llbracket \texttt{struct{T1 id1;\dots; Tn idn;}} \rrbracket_t= \\
+        &\texttt{t = \$sp-1}\\
+        &\texttt{\$sp = \$sp-n}\\
+        &\llbracket \texttt{T1} \rrbracket_{t1} \\
+        &\texttt{[t] = t1} \\
+        &\vdots
+        &\llbracket \texttt{Tn} \rrbracket_{tn}\\
+        &\texttt{[t-n+1] = tn} 
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Contrôle}
+    \begin{align*}
+        &\llbracket \texttt{id = E} \rrbracket= \\
+        &\llbracket \texttt{E} \rrbracket_{t} \\
+        &\rho(id) \texttt{= t} \\
+        &\llbracket \texttt{if(C) S1 else S2} \rrbracket =\\
+        &\llbracket \texttt{C} \rrbracket_{t} \\
+        &\texttt{cjump t == 0 --> else}\\
+        &\llbracket \texttt{S1} \rrbracket\\
+        \texttt{else}:&\\
+        &\llbracket \texttt{S2} \rrbracket\\
+        \texttt{endif}:&
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Construction des tableaux}
+    \begin{align*}
+        &\llbracket \texttt{T[N1]\dots[Np]} \rrbracket_t= \\
+        &\texttt{t = \$sp -1} \\
+        &\texttt{\$sp = \$sp - N1}\\
+        &\texttt{tc = t} \\
+        &\texttt{tmin = \$sp}\\
+        &\texttt{loop:}\\
+        &\texttt{cjump tc < tmin --> end}\\
+        &\hphantom{aa}\llbracket \texttt{T[N2]\dots[Np]} \rrbracket_{t'}\\
+        &\hphantom{aa}\texttt{[t-i+1] = t'}\\
+        &\texttt{tc = tc -1}\\
+        &jump loop\\
+        \texttt{end:}&
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Conditions}
+    \begin{align*}
+        &\llbracket \texttt{E1>E2} \rrbracket_t = \\
+        &\llbracket \texttt{E1} \rrbracket_{t'} = \\
+        &\llbracket \texttt{E2} \rrbracket_{t''} = \\
+        &\texttt{t = t' > t''}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Construction des scalaires}
+    \begin{align*}
+        &\llbracket \texttt{T} \rrbracket_t= \\
+        &\texttt{t = 0} \\
+        &\llbracket \texttt{*T} \rrbracket_{t}= \\
+        &\texttt{t = 0} 
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Return}
+    \begin{align*}
+        &\llbracket \texttt{return E;} \rrbracket= \\
+        &\llbracket \texttt{E} \rrbracket_{t} \\
+        &\texttt{t' = t} \\
+        &\texttt{free}\\
+        &\texttt{ret nb\_parameters} 
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Affectations structurées}
+    \begin{align*}
+        &\llbracket \texttt{E1 = E2} \rrbracket= \\
+        &\llbracket \texttt{E1} \rrbracket_{ta,tv}= \\
+        &\llbracket \texttt{E2} \rrbracket_{t}\\
+        &\texttt{[ta] = t} 
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Appel de Fonction}
+    \begin{align*}
+        &\llbracket \texttt{id(E1,\dots,En)} \rrbracket_t= \\
+        &\llbracket \texttt{E1} \rrbracket_{t1} \\
+        &\texttt{push t1} \\
+        &\vdots\\
+        &\llbracket \texttt{En} \rrbracket_{tn}\\
+        &\texttt{push tn} \\
+        &\texttt{call id}\\
+        &\texttt{St = t'}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Fonctions}
+    \begin{align*}
+        &\llbracket \texttt{T id(T1 id1,\dots,Tn idp)}\lbrace\\
+        &\hphantom{aa} \texttt{ T'1 id'1,\dots,T'q id'q;S1 \dots Sr}\rbrace \rrbracket= \\
+        id:&\\
+        &\texttt{alloc ?} \\
+        &\llbracket \texttt{T'1} \rrbracket_{t'1} \dots\llbracket \texttt{T'q} \rrbracket_{t'q} \\
+        &\texttt{t1 = [\$bp+2+p-1]}\\
+        &\vdots\\
+        &\texttt{tp = [\$bp+2+p-1]}\\
+        &\rho: \texttt{id1 --> t1 \dots idp --> tp}\\
+        &\hphantom{aaa}\texttt{id'1 --> t'1 \dots id'q --> t'q}\\
+        &\llbracket \texttt{S1} \rrbracket \dots\llbracket \texttt{Sr} \rrbracket\\
+        &\texttt{free}\\
+        &\texttt{ret p}
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Accès tableau}
+    \begin{align*}
+        &\llbracket \texttt{E1[E2]} \rrbracket_{ta,tv}= \\
+        &\llbracket \texttt{E1} \rrbracket_{tbase}= \\
+        &\llbracket \texttt{E2} \rrbracket_{toffset}= \\
+        &\texttt{ta = tbase - toffset}\\
+        &\texttt{tv = [ta]} 
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Accès struct}
+    \begin{align*}
+        &\llbracket \texttt{E.id} \rrbracket_{ta,tv}= \\
+        &\llbracket \texttt{E} \rrbracket_{tbase}= \\
+        &\texttt{toffset = rang(id)}\\
+        &\texttt{ta = tbase - toffset}\\
+        &\texttt{tv = [ta]} 
+    \end{align*}
+\end{trad}
+\begin{trad}
+    \paragraph*{Accès pointeur}
+    \begin{align*}
+        &\llbracket \texttt{*E} \rrbracket_{ta,tv}= \\
+        &\llbracket \texttt{E} \rrbracket_{ta}= \\
+        &\texttt{tv = [ta]} 
+    \end{align*}
+\end{trad}
+
 \end{document}
