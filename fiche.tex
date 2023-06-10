@@ -73,301 +73,213 @@
 \renewcommand{\abs}[1]{|#1|}
 \newcommand{\nm}[2]{ ||#1||_{#2} }
 \begin{document}
-\chapter*{Règles de traduction: Machine à Pile}
-
-$\llbracket E \rrbracket$ est le code pile qui évalue E et place le résultat dans la pile
-
-\begin{trad}
-\paragraph*{ \underline{Opération arithmétique avec Constantes}}
-\begin{align*}
-    &\llbracket x +1 \rrbracket = \\
-    &\texttt{push } \delta(x)\\
-    &\texttt{mpush } 1\\
-    &\texttt{add}
-\end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Constantes}}
-    \begin{align*}
-        &\llbracket \texttt{cst} \rrbracket = \\
-        &\texttt{mpush cst}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Opération arithmétique}}
-    \begin{align*}
-        &\llbracket E1+E2 \rrbracket = \\
-        &\llbracket E1 \rrbracket\\
-        &\llbracket E2 \rrbracket\\
-        &\texttt{add}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Supérieur}}
-    \begin{align*}
-        &\llbracket E1>E2 \rrbracket = \\
-        &\llbracket E1 \rrbracket\\
-        &\llbracket E2 \rrbracket\\
-        &\texttt{testg}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Inférieur}}
-    \begin{align*}
-        &\llbracket E1<E2 \rrbracket = \\
-        &\llbracket E1 \rrbracket\\
-        &\llbracket E2 \rrbracket\\
-        &\texttt{testl}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Affectation}}
-    \begin{align*}
-        &\llbracket x=E \rrbracket = \\
-        &\llbracket E \rrbracket\\
-        &\texttt{pop} \delta(x)
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Contrôle}}
-    \begin{align*}
-        &\llbracket \texttt{if(C) S1 else S2} \rrbracket = \\
-        &\llbracket C \rrbracket\\
-        &\texttt{jz else}\\
-        &\llbracket S1 \rrbracket\\
-        &\texttt{jmp endif}\\
-        \texttt{else:}&\\
-        &\llbracket S2 \rrbracket\\
-        \texttt{endif:}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Programme}}
-    \begin{align*}
-        &\llbracket \texttt{init id1,\dots,idn; S1 ... Sp} \rrbracket = \\
-        &\texttt{alloc n}\\
-        &\llbracket S1 \rrbracket \dots \llbracket Sp \rrbracket\\
-        &\texttt{free}\\
-        &\texttt{stop}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Appel de fonction}}
-    \begin{align*}
-        &\llbracket \texttt{id(E1,\dots,En)} \rrbracket = \\
-        &\llbracket E1 \rrbracket \dots \llbracket En \rrbracket\\
-        &\texttt{call id}\\
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Fonction}}
-    \begin{align*}
-        &\llbracket \texttt{int id(int id1,\dots,int idp)}\lbrace \\
-        &\texttt{int id'1,\dots,id'q;S1\dots Sr} \rbrace \rrbracket =\\
-        \texttt{id:}&\\
-        &\texttt{alloc q}\\
-        &\llbracket S1 \rrbracket \dots \llbracket Sr \rrbracket\\
-        &\texttt{free}\\
-        &\texttt{ret p}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Return}}
-    \begin{align*}
-        &\llbracket \texttt{return E} \rrbracket = \\
-        &\llbracket E \rrbracket\\
-        &\texttt{iret nb\_param}\\
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Programme avec fonctions}}
-    \begin{align*}
-        &\llbracket \texttt{F1\dots Fp} \rrbracket = \\
-        &\texttt{call main}\\
-        &\texttt{mov rax,0}\\
-        &\texttt{ret 0}\\
-        &\llbracket F1 \rrbracket\\
-        & \dots\\
-        &\llbracket Fp \rrbracket\\
-    \end{align*}
-\end{trad}
-
-\chapter*{Règles de traduction: Machine à Registres}
-\texttt{[t1 + imm] = t2} Ecrit t2 à l'adresse \texttt{t1+imm}
-
-\texttt{ t1 = [t2 + imm]} Ecrit dans t1 la donnée stockée dans l'adresse \texttt{t2+imm}
-
-\begin{trad}
-    \paragraph*{ \underline{Opération arithmétique}}\hphantom{a}\\
+\Large\underline{\textbf{Traduction: Machine à Pile}}\normalsize\\
+$\llbracket E \rrbracket$: code pile évaluant E,le résultat va dans la pile\\
+    \underline{Opération arithmétique avec Constantes}
+    $\llbracket x +1 \rrbracket = $\\
+    $\texttt{push } \delta(x)$\\
+    $\texttt{mpush } 1$\\
+    $\texttt{add}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Constantes}
+    $\llbracket \texttt{cst} \rrbracket = $\\
+    $\texttt{mpush cst}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Opération arithmétique}
+    $\llbracket E1+E2 \rrbracket = $\\
+    $\llbracket E1 \rrbracket$\\
+    $\llbracket E2 \rrbracket$\\
+    $\texttt{add}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Supérieur/Inférieur}
+    $\llbracket E1 > (resp <) E2 \rrbracket = $\\
+    $\llbracket E1 \rrbracket$\\
+    $\llbracket E2 \rrbracket$\\
+    $\texttt{testg}\hphantom{aa}(resp\hphantom{aa} \texttt{testl})$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Affectation}
+    $\llbracket x=E \rrbracket = $\\
+    $\llbracket E \rrbracket$\\
+    $\texttt{pop } \delta(x)$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Contrôle}
+    $\llbracket \texttt{if(C) S1 else S2} \rrbracket = $\\
+    \hphantom{aaaaaa}$\llbracket C \rrbracket$\\
+    \hphantom{aaaaaa}$\texttt{jz else}$\\
+    \hphantom{aaaaaa}$\llbracket S1 \rrbracket$\\
+    \hphantom{aaaaaa}$\texttt{jmp endif}$\\
+    $\texttt{else:}$\\
+    \hphantom{aaaaaa}$\llbracket S2 \rrbracket$\\
+    $\texttt{endif:}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Programme}
+    $\llbracket \texttt{init id1,\dots,idn; S1 ... Sp} \rrbracket = $\\
+    $\texttt{alloc n}$\\
+    $\llbracket S1 \rrbracket \dots \llbracket Sp \rrbracket$\\
+    $\texttt{free}$\\
+    $\texttt{stop}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Appel de fonction}
+    $\llbracket \texttt{id(E1,\dots,En)} \rrbracket = $\\
+    $\llbracket E1 \rrbracket \dots \llbracket En \rrbracket$\\
+    $\texttt{call id}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Fonction}
+    \small $\llbracket \texttt{int id(int id1\dots idp)}\lbrace\\
+    \hphantom{aaa} \texttt{int id'1\dots id'q;S1\dots Sr} \rbrace \rrbracket =$\normalsize\\
+    $\texttt{id:}$\\
+    \hphantom{aaaaaa}$\texttt{alloc q}$\\
+    \hphantom{aaaaaa}$\llbracket S1 \rrbracket \dots \llbracket Sr \rrbracket$\\
+    \hphantom{aaaaaa}$\texttt{free}$\\
+    \hphantom{aaaaaa}$\texttt{ret p}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Return}
+    $\llbracket \texttt{return E} \rrbracket =$\\
+    $\llbracket E \rrbracket$\\
+    $\texttt{iret nb\_param}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Programme avec fonctions}
+    $\llbracket \texttt{F1\dots Fp} \rrbracket = $\\
+    $\texttt{call main}$\\
+    $\texttt{mov rax,0}$\\
+    $\texttt{ret 0}$\\
+    $\llbracket F1 \rrbracket \dots \llbracket Fp \rrbracket$\\
+\Large\underline{\textbf{Traduction: Machine à Registres}}\normalsize\\
+\texttt{[t1+imm] = t2}: Ecrit t2 à l'adresse \texttt{t1+imm}\\
+\texttt{t1 = [t2+imm]}: le contenu de l'adresse \texttt{t2+imm} dans t1\\
+\rule{9cm}{0.1pt}
+    \underline{Opération arithmétique}\\
     \texttt{t1 = imm} place \verb|imm| dans t1\\
     \texttt{t1 = t2} copie \verb|t2| dans \verb|t1|\\
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Tests}}\hphantom{a}\\
+\rule{9cm}{0.1pt}\\
+    \underline{Tests}\\
     \texttt{t1 = t2 rel t3}; \\
     \verb|t1 = 1| si \texttt{t2 rel t3} 0 sinon\\
     \texttt{rel} peut être == / != / < / >\\
-\end{trad}
-\begin{trad}
-    \paragraph*{ \underline{Contrôle}}\hphantom{a}\\
+\rule{9cm}{0.1pt}
+    \underline{Contrôle}\\
     \texttt{jump @} saute à \verb|@|\\
-    \texttt{cjump t1 rel t2 --> @} saute à \verb|@| si t rel t1\\
-\end{trad}
+    \texttt{cjump t1 rel t2 --> @} saute à \verb|@| si t2 rel t1\\
+\rule{9cm}{0.1pt}\\
 $\llbracket E \rrbracket_t$ évalue E et le place dans le temporaire \verb|t|\\
 $\rho$ donne un temporarire à partir d'une variable\\
-\begin{trad}
-    \paragraph*{ \underline{Expressions}}
-    \begin{align*}
-        &\llbracket \texttt{imm} \rrbracket_t = \\
-        &\texttt{t = imm}\\
-        &\llbracket \texttt{id} \rrbracket_t = \\
-        &\texttt{t =} \rho(id)\\
-        &\llbracket \texttt{E1 + E2} \rrbracket_t = \\
-        &\llbracket \texttt{E1} \rrbracket_{t'}\\
-        &\llbracket \texttt{E2} \rrbracket_{t} = \\
-        &\texttt{t = t' + t''}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Construction des structures}
-    \begin{align*}
-        &\llbracket \texttt{struct{T1 id1;\dots; Tn idn;}} \rrbracket_t= \\
-        &\texttt{t = \$sp-1}\\
-        &\texttt{\$sp = \$sp-n}\\
-        &\llbracket \texttt{T1} \rrbracket_{t1} \\
-        &\texttt{[t] = t1} \\
-        &\vdots
-        &\llbracket \texttt{Tn} \rrbracket_{tn}\\
-        &\texttt{[t-n+1] = tn} 
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Contrôle}
-    \begin{align*}
-        &\llbracket \texttt{id = E} \rrbracket= \\
-        &\llbracket \texttt{E} \rrbracket_{t} \\
-        &\rho(id) \texttt{= t} \\
-        &\llbracket \texttt{if(C) S1 else S2} \rrbracket =\\
-        &\llbracket \texttt{C} \rrbracket_{t} \\
-        &\texttt{cjump t == 0 --> else}\\
-        &\llbracket \texttt{S1} \rrbracket\\
-        \texttt{else}:&\\
-        &\llbracket \texttt{S2} \rrbracket\\
-        \texttt{endif}:&
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Construction des tableaux}
-    \begin{align*}
-        &\llbracket \texttt{T[N1]\dots[Np]} \rrbracket_t= \\
-        &\texttt{t = \$sp -1} \\
-        &\texttt{\$sp = \$sp - N1}\\
-        &\texttt{tc = t} \\
-        &\texttt{tmin = \$sp}\\
-        &\texttt{loop:}\\
-        &\texttt{cjump tc < tmin --> end}\\
-        &\hphantom{aa}\llbracket \texttt{T[N2]\dots[Np]} \rrbracket_{t'}\\
-        &\hphantom{aa}\texttt{[t-i+1] = t'}\\
-        &\texttt{tc = tc -1}\\
-        &jump loop\\
-        \texttt{end:}&
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Conditions}
-    \begin{align*}
-        &\llbracket \texttt{E1>E2} \rrbracket_t = \\
-        &\llbracket \texttt{E1} \rrbracket_{t'} = \\
-        &\llbracket \texttt{E2} \rrbracket_{t''} = \\
-        &\texttt{t = t' > t''}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Construction des scalaires}
-    \begin{align*}
-        &\llbracket \texttt{T} \rrbracket_t= \\
-        &\texttt{t = 0} \\
-        &\llbracket \texttt{*T} \rrbracket_{t}= \\
-        &\texttt{t = 0} 
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Return}
-    \begin{align*}
-        &\llbracket \texttt{return E;} \rrbracket= \\
-        &\llbracket \texttt{E} \rrbracket_{t} \\
-        &\texttt{t' = t} \\
-        &\texttt{free}\\
-        &\texttt{ret nb\_parameters} 
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Affectations structurées}
-    \begin{align*}
-        &\llbracket \texttt{E1 = E2} \rrbracket= \\
-        &\llbracket \texttt{E1} \rrbracket_{ta,tv}= \\
-        &\llbracket \texttt{E2} \rrbracket_{t}\\
-        &\texttt{[ta] = t} 
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Appel de Fonction}
-    \begin{align*}
-        &\llbracket \texttt{id(E1,\dots,En)} \rrbracket_t= \\
-        &\llbracket \texttt{E1} \rrbracket_{t1} \\
-        &\texttt{push t1} \\
-        &\vdots\\
-        &\llbracket \texttt{En} \rrbracket_{tn}\\
-        &\texttt{push tn} \\
-        &\texttt{call id}\\
-        &\texttt{t = t' (=rax)}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Fonctions}
-    \begin{align*}
-        &\llbracket \texttt{T id(T1 id1,\dots,Tn idp)}\lbrace\\
-        &\hphantom{aa} \texttt{ T'1 id'1,\dots,T'q id'q;S1 \dots Sr}\rbrace \rrbracket= \\
-        id:&\\
-        &\texttt{alloc ?} \\
-        &\llbracket \texttt{T'1} \rrbracket_{t'1} \dots\llbracket \texttt{T'q} \rrbracket_{t'q} \\
-        &\texttt{t1 = [\$bp+2+p-1]}\\
-        &\vdots\\
-        &\texttt{tp = [\$bp+2+p-1]}\\
-        &\rho: \texttt{id1 --> t1 \dots idp --> tp}\\
-        &\hphantom{aaa}\texttt{id'1 --> t'1 \dots id'q --> t'q}\\
-        &\llbracket \texttt{S1} \rrbracket \dots\llbracket \texttt{Sr} \rrbracket\\
-        &\texttt{free}\\
-        &\texttt{ret p}
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Accès tableau}
-    \begin{align*}
-        &\llbracket \texttt{E1[E2]} \rrbracket_{ta,tv}= \\
-        &\llbracket \texttt{E1} \rrbracket_{tbase}= \\
-        &\llbracket \texttt{E2} \rrbracket_{toffset}= \\
-        &\texttt{ta = tbase - toffset}\\
-        &\texttt{tv = [ta]} 
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Accès struct}
-    \begin{align*}
-        &\llbracket \texttt{E.id} \rrbracket_{ta,tv}= \\
-        &\llbracket \texttt{E} \rrbracket_{tbase}= \\
-        &\texttt{toffset = rang(id)}\\
-        &\texttt{ta = tbase - toffset}\\
-        &\texttt{tv = [ta]} 
-    \end{align*}
-\end{trad}
-\begin{trad}
-    \paragraph*{Accès pointeur}
-    \begin{align*}
-        &\llbracket \texttt{*E} \rrbracket_{ta,tv}= \\
-        &\llbracket \texttt{E} \rrbracket_{ta}= \\
-        &\texttt{tv = [ta]} 
-    \end{align*}
-\end{trad}
-
+    \underline{Expressions}\\
+    $\llbracket \texttt{imm} \rrbracket_t = $\\
+    \hphantom{aa}$\texttt{t = imm}$\\
+    \rule{3cm}{0.1pt}\\
+    $\llbracket \texttt{id} \rrbracket_t = $\\
+    \hphantom{aa}$\texttt{t =} \rho(id)$\\
+    \rule{3cm}{0.1pt}\\
+    $\llbracket \texttt{E1 + E2} \rrbracket_t = $\\
+    \hphantom{aa}$\llbracket \texttt{E1} \rrbracket_{t'}$\\
+    \hphantom{aa}$\llbracket \texttt{E2} \rrbracket_{t''}$ \\
+    \hphantom{aa}$\texttt{t = t' + t''}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Contrôle}\\
+    $\llbracket \texttt{id = E} \rrbracket= $\\
+    \hphantom{aa}$\llbracket \texttt{E} \rrbracket_{t} $\\
+    \hphantom{aa}$\rho(id) \texttt{= t} $\\
+    \rule{3cm}{0.1pt}\\
+    $\llbracket \texttt{if(C) S1 else S2} \rrbracket =$\\
+    \hphantom{aaaaaa}$\llbracket \texttt{C} \rrbracket_{t} $\\
+    \hphantom{aaaaaa}$\texttt{cjump t == 0 --> else}$\\
+    \hphantom{aaaaaa}$\llbracket \texttt{S1} \rrbracket$\\
+    \hphantom{aaaaaa}$\texttt{jump endif}$\\
+    $\texttt{else}:$\\
+    \hphantom{aaaaaa}$\llbracket \texttt{S2} \rrbracket$\\
+    $\texttt{endif}:$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Construction des tableaux}\\
+    $\llbracket \texttt{T[N1]\dots[Np]} \rrbracket_t= $\\
+    \hphantom{aaaaaa}$\texttt{t = \$sp -1} $\\
+    \hphantom{aaaaaa}$\texttt{\$sp = \$sp - N1}$\\
+    \hphantom{aaaaaa}$\texttt{tc = t} $\\
+    \hphantom{aaaaaa}$\texttt{tmin = \$sp}$\\
+    $\texttt{loop:}$\\
+    \hphantom{aaaaaa}$\texttt{cjump tc < tmin --> end}$\\
+    \hphantom{aaaaaa}$\hphantom{aa}\llbracket \texttt{T[N2]\dots[Np]} \rrbracket_{t'}$\\
+    \hphantom{aaaaaa}$\hphantom{aa}\texttt{[t-i+1] = t'}$\\
+    \hphantom{aaaaaa}$\texttt{tc = tc -1}$\\
+    \hphantom{aaaaaa}$\texttt{jump loop}$\\
+    $\texttt{end:}$\\
+\rule{9cm}{0.1pt}\\
+\hphantom{a}\\
+    \underline{Construction des structures}
+    $\llbracket \texttt{struct}\lbrace \texttt{T1 id1;\dots; Tn idn;}\rbrace \rrbracket_t= $\\
+    $\texttt{t = \$sp-1}$\\
+    $\texttt{\$sp = \$sp-n}$\\
+    $\llbracket \texttt{T1} \rrbracket_{t1}$\\
+    $\texttt{[t] = t1} $\\
+    $\vdots$\\
+    $\llbracket \texttt{Tn} \rrbracket_{tn}$\\
+    $\texttt{[t-n+1] = tn}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Conditions}
+    $\llbracket \texttt{E1>E2} \rrbracket_t = $\\
+    $\llbracket \texttt{E1} \rrbracket_{t'} = $\\
+    $\llbracket \texttt{E2} \rrbracket_{t''} = $\\
+    $\texttt{t = t' > t''}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Construction des scalaires}
+    $\llbracket \texttt{T} \rrbracket_t= $\\
+    $\texttt{t = 0} $\\
+    $\llbracket \texttt{*T} \rrbracket_{t}= $\\
+    $\texttt{t = 0}$ \\
+\rule{9cm}{0.1pt}\\
+    \underline{Return}
+    $\llbracket \texttt{return E;} \rrbracket= $\\
+    $\llbracket \texttt{E} \rrbracket_{t} $\\
+    $\texttt{t' = t} $\\
+    $\texttt{free}$\\
+    $\texttt{ret nb\_parameters}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Affectations structurées}
+    $\llbracket \texttt{E1 = E2} \rrbracket= $\\
+    $\llbracket \texttt{E1} \rrbracket_{ta,tv}= $\\
+    $\llbracket \texttt{E2} \rrbracket_{t}$\\
+    $\texttt{[ta] = t}$\\    
+\rule{9cm}{0.1pt}\\
+    \underline{Appel de Fonction}
+    $\llbracket \texttt{id(E1,\dots,En)} \rrbracket_t= $\\
+    $\llbracket \texttt{E1} \rrbracket_{t1} $\\
+    $\texttt{push t1} $\\
+    $\vdots$\\
+    $\llbracket \texttt{En} \rrbracket_{tn}$\\
+    $\texttt{push tn} $\\
+    $\texttt{call id}$\\
+    $\texttt{t = t' (=rax)}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Fonctions}
+    $\llbracket \texttt{T id(T1 id1,\dots,Tn idp)}\lbrace$\\
+    \hphantom{aa} $\texttt{ T'1 id'1,\dots,T'q id'q;S1 \dots Sr}\rbrace \rrbracket= $\\
+    $id:$\\
+    \hphantom{aaaaaa}$\texttt{alloc ?} $\\
+    \hphantom{aaaaaa}$\llbracket \texttt{T'1} \rrbracket_{t'1} \dots\llbracket \texttt{T'q} \rrbracket_{t'q} $\\
+    \hphantom{aaaaaa}$\texttt{t1 = [\$bp+2+p-1]}$\\
+    \hphantom{aaaaaa}$\vdots$\\
+    \hphantom{aaaaaa}$\texttt{tp = [\$bp+2+p-1]}$\\
+    \hphantom{aaaaaa}$\rho: \texttt{id1 --> t1 \dots idp --> tp}$\\
+    \hphantom{aaaaaa}$\hphantom{aaa}\texttt{id'1 --> t'1 \dots id'q --> t'q}$\\
+    \hphantom{aaaaaa}$\llbracket \texttt{S1} \rrbracket \dots\llbracket \texttt{Sr} \rrbracket$\\
+    \hphantom{aaaaaa}$\texttt{free}$\\
+    \hphantom{aaaaaa}$\texttt{ret p}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Accès tableau}
+    $\llbracket \texttt{E1[E2]} \rrbracket_{ta,tv}= $\\
+    $\llbracket \texttt{E1} \rrbracket_{tbase}= $\\
+    $\llbracket \texttt{E2} \rrbracket_{toffset}=$\\
+    $\texttt{ta = tbase - toffset}$\\
+    $\texttt{tv = [ta]}$\\
+\rule{9cm}{0.1pt}\\
+    \underline{Accès struct}
+    $\llbracket \texttt{E.id} \rrbracket_{ta,tv}= $\\
+    $\llbracket \texttt{E} \rrbracket_{tbase}= $\\
+    $\texttt{toffset = rang(id)}$\\
+    $\texttt{ta = tbase - toffset}$\\
+    $\texttt{tv = [ta]}$\\ 
+\rule{9cm}{0.1pt}\\
+    \underline{Accès pointeur}
+    $\llbracket \texttt{*E} \rrbracket_{ta,tv}= $\\
+    $\llbracket \texttt{E} \rrbracket_{ta}= $\\
+    $\texttt{tv = [ta]}$ 
 \end{document}
